@@ -3,6 +3,20 @@ import psycopg2
 import yfinance as yf
 import math
 
+
+def clear_portfolio_table(username):
+    connection = psycopg2.connect(user="stockfi",
+                                  password="jandrew28",
+                                  host="postgresdb1.woodez.net",
+                                  port="5432",
+                                  database="stockfi")
+    cursor = connection.cursor()
+    cursor.execute("DELETE FROM mybag_mybag where username = %s", (username,))    
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+
 def insert_database(stock_ticker, number_shares):
     connection = psycopg2.connect(user="stockfi",
                                   password="jandrew28",
@@ -17,7 +31,7 @@ def insert_database(stock_ticker, number_shares):
 
 
 
-data = pandas.read_csv('woodez-quotes.csv')
+data = pandas.read_csv('woodez-quotes-01142022.csv')
 symbol_list = data['Symbol'].unique()
 
 def get_quanity(ticker):
@@ -32,6 +46,7 @@ def get_quanity(ticker):
 ##tuples = list(set([tuple(x) for x in total.to_numpy()]))
 # sum_total = total['
 ###print(type(total))
+clear_portfolio_table("kwood")
 for ticker in symbol_list:
     shares = get_quanity(ticker)['shares']
     print(ticker)

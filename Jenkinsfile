@@ -2,10 +2,6 @@ pipeline {
 
   agent { label 'azure' }
 
-  parameters{
-    string(defaultValue: 'sq,tsla', name: 'Stocks', description: 'Comma spearated list of stocks you want to analyze and watch')
-  }
-
   stages {
 
     stage('Checkout') {
@@ -14,16 +10,42 @@ pipeline {
       }  
     }
 
-    stage('update stock cache') {
+    stage('update portfolio listing') {
         steps {
             script {
                     sh """
-                       python3 src/cache_df.py ${params.Stocks}
+                       echo Portfolio_Import
+                       python3 src/import_portfolio_yahoo.py
                     """    
              
             }
         }
     }
+
+    stage('update portfolio value') {
+        steps {
+            script {
+                    sh """
+                       echo update_portfolio_value
+                       python3 src/portfolio_calc_value.py
+                    """    
+             
+            }
+        }
+    }
+
+
+    stage('cache my stock data in redis') {
+        steps {
+            script {
+                    sh """
+                       python3 src/cache_df.py
+                    """    
+             
+            }
+        }
+    }
+
   
   } 
 }
