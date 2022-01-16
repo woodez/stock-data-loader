@@ -15,7 +15,8 @@ pipeline {
             script {
                     sh """
                        echo Portfolio_Import
-                       python3 src/import_portfolio_yahoo.py
+                       cd src
+                       python3 import_portfolio_yahoo.py
                     """    
              
             }
@@ -27,7 +28,8 @@ pipeline {
             script {
                     sh """
                        echo update_portfolio_value
-                       python3 src/portfolio_calc_value.py
+                       cd src
+                       python3 portfolio_calc_value.py
                     """    
              
             }
@@ -39,7 +41,8 @@ pipeline {
         steps {
             script {
                     sh """
-                       python3 src/cache_df.py
+                       cd src
+                       python3 cache_df.py
                     """    
              
             }
