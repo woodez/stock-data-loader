@@ -61,6 +61,7 @@ def current_portfolio_value():
     value_list = []
     today = datetime.today().strftime('%m/%d/%Y')
     value = '{:.2f}'.format(total)
+    print(today)
     portfolio_dates.append(today)
     value_list.append(value)
     df_new = pd.DataFrame({'date': portfolio_dates, 'value': value_list}) 
@@ -75,6 +76,7 @@ def current_portfolio_value():
     return df_redis
 
 #print('{:.2f}'.format(total))
+current_portfolio_value()
 print("##########Storing Woodez Fund Value###############")       
 print(get_cached_df("woodez"))
 # print(current_portfolio_value())
