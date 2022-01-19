@@ -50,12 +50,19 @@ def current_portfolio_value():
        amount = row[3]
        tmpdict = { ticker : amount }
        portfolio_list.update(tmpdict)
-
+    ticker_list = []
     value_list = []
     for key, value in portfolio_list.items():
         price = get_close_value(key)
         market_value = float(price) * float(value)
-        value_list.append(market_value)
+        if value != 0:
+           ticker_list.append(key)
+           value_list.append(market_value)
+    portfolio_details = {
+      'Name': ticker_list,
+      'Amount': value_list,
+    }
+    portfolio_df = pd.DataFrame(portfolio_details)
     total = math.fsum(value_list)
     portfolio_dates = []
     value_list = []
@@ -73,12 +80,13 @@ def current_portfolio_value():
        print("what") 
        df_redis = df_new    
     import_data_redis("woodez",df_redis)
+    import_data_redis("woodez_portfolio_details",portfolio_df)
     return df_redis
 
 #print('{:.2f}'.format(total))
 current_portfolio_value()
 print("##########Storing Woodez Fund Value###############")       
-print(get_cached_df("woodez"))
+print(get_cached_df("woodez_portfolio_details"))
 # print(current_portfolio_value())
 # current_portfolio_value()
 ###df_redis = get_cached_df("woodez")
