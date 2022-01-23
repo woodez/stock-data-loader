@@ -1,0 +1,26 @@
+pipeline {
+
+  agent { label 'azure' }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+          checkout scm
+      }  
+    }
+
+    stage('update BTC data') {
+        steps {
+            script {
+                    sh """
+                       echo BTC_Data_Import
+                       cd src
+                       python3 btc-data-load-1min.py
+                    """    
+             
+            }
+        }
+    }
+  } 
+}
