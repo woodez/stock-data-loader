@@ -1,7 +1,6 @@
 import pyarrow as pa
 import redis
 import yfinance as yf
-import psycopg2
 import sys
 import warnings
 warnings.filterwarnings("ignore")
