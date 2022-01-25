@@ -31,7 +31,6 @@ def cache_df(alias,df):
     if res == True:
         print('df cached')
 
-
 def import_data_redis(alias,stock_symbol):
     ticker = yf.Ticker(stock_symbol)
     import_df = ticker.history(period="max")
