@@ -21,7 +21,7 @@ def cache_df(alias,df):
 
 
 ticker = yf.Ticker("BTC-CAD")
-import_df = ticker.history(period="1y")
+import_df = ticker.history(period="max")
 cache_df("BTC-CAD-HIST", import_df)
 print(import_df)
 
