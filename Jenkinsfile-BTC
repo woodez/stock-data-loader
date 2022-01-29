@@ -1,6 +1,6 @@
 pipeline {
 
-  agent { label 'azure' }
+  agent { label 'ubuntu' }
 
   stages {
 
