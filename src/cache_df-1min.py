@@ -53,6 +53,6 @@ for row in records:
 
     alias = "{}-trend".format(alias)
 
-    if "BTC" not in alias: 
+    if "BTC" not in alias and "ETH" not in alias:
        print(alias)
        import_data_redis(alias,tick)

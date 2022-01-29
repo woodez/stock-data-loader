@@ -19,5 +19,5 @@ def get_cached_df(alias):
 
     return None
 
-test = get_cached_df("TSLA")
+test = get_cached_df("SQ-trend")
 print(test)
