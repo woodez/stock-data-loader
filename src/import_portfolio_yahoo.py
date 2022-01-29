@@ -31,7 +31,7 @@ def insert_database(stock_ticker, number_shares):
 
 
 
-data = pandas.read_csv('woodez-quotes-01142022.csv')
+data = pandas.read_csv('woodez-quotes.csv')
 symbol_list = data['Symbol'].unique()
 
 def get_quanity(ticker):
