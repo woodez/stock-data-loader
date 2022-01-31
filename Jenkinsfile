@@ -10,13 +10,13 @@ pipeline {
       }  
     }
 
-    stage('update portfolio listing') {
+    stage('update stock quotes') {
         steps {
             script {
                     sh """
-                       echo Portfolio_Import
+                       echo stockupdate
                        cd src
-                       python3 import_portfolio_yahoo.py
+                       python3 cache_df-1min.py
                     """    
              
             }
