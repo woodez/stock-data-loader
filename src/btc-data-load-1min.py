@@ -25,6 +25,15 @@ import_df = ticker.history(period="max")
 cache_df("BTC-CAD-HIST", import_df)
 print(import_df)
 
+ticker = yf.Ticker("ETH-CAD")
+import_df = ticker.history(period="max")
+cache_df("ETH-CAD-HIST", import_df)
+print(import_df)
+
 df = yf.download(tickers="BTC-CAD",period='7d',interval='1m')
 cache_df("BTC-CAD", df)
+print(df)
+
+df = yf.download(tickers="ETH-CAD",period='7d',interval='1m')
+cache_df("ETH-CAD", df)
 print(df)

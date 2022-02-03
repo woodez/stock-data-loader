@@ -84,9 +84,9 @@ def current_portfolio_value():
     return df_redis
 
 #print('{:.2f}'.format(total))
-current_portfolio_value()
-print("##########Storing Woodez Fund Value###############")       
-print(get_cached_df("woodez_portfolio_details"))
+# current_portfolio_value()
+# print("##########Storing Woodez Fund Value###############")       
+# print(get_cached_df("woodez_portfolio_details"))
 # print(current_portfolio_value())
 # current_portfolio_value()
 ###df_redis = get_cached_df("woodez")
