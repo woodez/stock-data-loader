@@ -83,6 +83,7 @@ def current_portfolio_value():
     import_data_redis("woodez_portfolio_details",portfolio_df)
     return df_redis
 
+current_portfolio_value()
 #print('{:.2f}'.format(total))
 # current_portfolio_value()
 # print("##########Storing Woodez Fund Value###############")       

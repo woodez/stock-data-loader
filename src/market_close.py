@@ -64,6 +64,6 @@ def current_portfolio_value():
     }
     close_df = pd.DataFrame(close_details)
     import_data_redis("ticker_close",close_df)
-    return import_data
+    return close_df
 
 current_portfolio_value()
