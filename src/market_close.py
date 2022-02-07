@@ -10,7 +10,7 @@ warnings.filterwarnings("ignore")
 
 
 def get_close(ticker):
-    return float(yf.Ticker(ticker).info['previousClose'])
+    return float(yf.Ticker(ticker).info['open'])
 
 def get_cached_df(alias):
     pool = redis.ConnectionPool(host='redis01.woodez.net',port='6379', db=0) 
@@ -51,6 +51,7 @@ def current_portfolio_value():
        ticker = row[2]
        close = get_close(ticker)
        tmpdict = { ticker : close }
+       print(tmpdict)
        close_list.update(tmpdict)
 
     ticker_list = []
@@ -64,6 +65,7 @@ def current_portfolio_value():
     }
     close_df = pd.DataFrame(close_details)
     import_data_redis("ticker_close",close_df)
+    print(close_df)
     return close_df
 
 current_portfolio_value()
