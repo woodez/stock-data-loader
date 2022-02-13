@@ -9,8 +9,10 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def get_close(ticker):
-    return float(yf.Ticker(ticker).info['open'])
+def get_day_open(ticker):
+    ticker = "{}-trend".format(ticker) 
+    return '{:.2f}'.format(float(get_cached_df(ticker)['Open'].iloc[:1][0]))
+
 
 def get_cached_df(alias):
     pool = redis.ConnectionPool(host='redis01.woodez.net',port='6379', db=0) 
@@ -49,10 +51,17 @@ def current_portfolio_value():
     close_list = {}
     for row in records:
        ticker = row[2]
-       close = get_close(ticker)
-       tmpdict = { ticker : close }
-       print(tmpdict)
-       close_list.update(tmpdict)
+       if '-' in ticker:
+          ticker = ticker.split("-")[0].upper()
+       elif '.' in ticker:
+          ticker = ticker.split(".")[0].upper()
+       else:
+          ticker = ticker.upper()
+
+       if "BTC" not in ticker and "ETH" not in ticker:
+          close = get_day_open(ticker)
+          tmpdict = { ticker : close }
+          close_list.update(tmpdict)
 
     ticker_list = []
     value_list = []
