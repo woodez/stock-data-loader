@@ -9,9 +9,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-def get_day_open(ticker):
-    ticker = "{}-trend".format(ticker) 
-    return '{:.2f}'.format(float(get_cached_df(ticker)['Open'].iloc[:1][0]))
+def get_day_open(ticker): 
+    return '{:.2f}'.format(float(get_cached_df(ticker)['Close'].iloc[-1:][0]))
 
 
 def get_cached_df(alias):
