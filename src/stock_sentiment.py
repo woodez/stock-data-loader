@@ -1,4 +1,5 @@
 import yfinance as yf
+from datetime import datetime
 import tweepy
 import sys
 sys.path.append('.')
@@ -54,6 +55,14 @@ def cache_df(alias,df):
     df_compressed =  context.serialize(df).to_buffer().to_pybytes()
     res = cur.set(alias,df_compressed)
 
+def get_cached_df(alias):
+    pool = redis.ConnectionPool(host='redis01.woodez.net',port='6379', db=0) 
+    cur = redis.Redis(connection_pool=pool)
+    context = pa.default_serialization_context()
+    result = cur.get(alias)
+    dataframe = pd.DataFrame.from_dict(context.deserialize(result))
+    return dataframe
+
 def import_data_redis(alias,sentiment_data):
     cache_df(alias, sentiment_data)
 ## for info in tweets[:20]:
@@ -103,8 +112,23 @@ def ticker_news():
         'Amount': value_list,
     }
     sentiment_df = pd.DataFrame(sentiment_details)
-    import_data_redis("ticker_sentiment",sentiment_df)
-    print(sentiment_df)
+    total = math.fsum(value_list)
+    portfolio_dates = []
+    value_list = []
+    today = datetime.today().strftime('%m/%d/%Y')
+    value = '{:.2f}'.format(total)
+    portfolio_dates.append(today)
+    value_list.append(value)
+    df_new = pd.DataFrame({'date': portfolio_dates, 'value': value_list})
+    try:
+       df_redis = get_cached_df("woodez_sentiment")
+       df_redis = df_redis.append(df_new, ignore_index = True )
+       df_redis.drop_duplicates(subset ="date", keep = "last", inplace = True)
+    except TypeError:
+       df_redis = df_new
+    print(df_redis)
+    import_data_redis("woodez_sentiment",df_redis)
+    import_data_redis("ticker_sentiment",sentiment_df)    
     return sentiment_df
 
 ticker_news()

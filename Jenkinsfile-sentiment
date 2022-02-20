@@ -1,0 +1,26 @@
+pipeline {
+
+  agent { label 'azure' }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+          checkout scm
+      }  
+    }
+    stage('record day close') {
+        steps {
+            script {
+                    sh """
+                       cd src
+                       python3 stock_sentiment.py
+                    """    
+             
+            }
+        }
+    }
+
+  
+  } 
+}
