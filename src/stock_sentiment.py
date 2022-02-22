@@ -27,16 +27,25 @@ access_token_secret = twitter_auth['AccessTokenSecret']
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
-userID = '@Square'
-api = tweepy.API(auth)
-tweets = api.user_timeline(screen_name=userID, 
-                           # 200 is the maximum allowed count
-                           count=200,
-                           include_rts = False,
-                           # Necessary to keep full_text 
-                           # otherwise only the first 140 words are extracted
-                           tweet_mode = 'extended'
-                           )
+def twitter_query(userID):
+    # userID = '@BTCTN'
+    api = tweepy.API(auth)
+    tweets = api.user_timeline(screen_name=userID, 
+                               # 200 is the maximum allowed count
+                               count=200,
+                               include_rts = False,
+                               # Necessary to keep full_text 
+                               # otherwise only the first 140 words are extracted
+                               tweet_mode = 'extended'
+                               )
+    return tweets
+
+def twitter_query_crisis(search_string):
+    api = tweepy.API(auth)
+    public_tweets = api.search_tweets(q=search_string, count=100, tweet_mode = 'extended', lang="en")
+    return public_tweets
+
+
 def get_data_db(query):
     connection = psycopg2.connect(user="stockfi",
                                   password="jandrew28",
@@ -65,16 +74,54 @@ def get_cached_df(alias):
 
 def import_data_redis(alias,sentiment_data):
     cache_df(alias, sentiment_data)
-## for info in tweets[:20]:
-#     print("ID: {}".format(info.id))
-##    created = info.created_at
-##    tweet_msg = info.full_text.strip('\n')
-##    print(tweet_msg)
+
+def twitter_sentiment(twitter_user,datasource,type):
+    sentiment_total = 0
+#     tweets = twitter_query("@BTCTN")
+    if "crisis" in type:
+       tweets = twitter_query_crisis("Ukraine")
+    else:
+       tweets = twitter_query(twitter_user)
+
+    for info in tweets[:40]:
+#        print("ID: {}".format(info.id))
+        created = info.created_at
+        tweet_msg = info.full_text.strip('\n')
+        analysis = TextBlob(str(tweet_msg))
+        sentiment = analysis.sentiment.polarity
+#        print("{},{}".format(tweet_msg,sentiment))
+        sentiment_total+=sentiment
+    test = redis_set(sentiment_total,datasource)
+    print(test)
+
+
+def redis_set(total,data):
+    portfolio_dates = []
+    value_list = []
+    today = datetime.today().strftime('%m/%d/%Y')
+    value = '{:.2f}'.format(total)
+    portfolio_dates.append(today)
+    value_list.append(value)
+    df_new = pd.DataFrame({'date': portfolio_dates, 'value': value_list})
+    try:
+       df_redis = get_cached_df(data)
+       df_redis = df_redis.append(df_new, ignore_index = True )
+       df_redis.drop_duplicates(subset ="date", keep = "last", inplace = True)
+    except TypeError:
+       df_redis = df_new
+    
+    import_data_redis(data,df_redis)
+    # import_data_redis("ticker_sentiment",sentiment_df)        
+    return df_redis
+ 
+
 ##    public_tweets = api.search_tweets(q="Square", lang="en")
 # for tweet in public_tweets:
 #    print(tweet.text)
 #    analysis = TextBlob(tweet.text)
 #    print(analysis.sentiment)
+
+
 
 def get_sentiment(ticker):
     ticker = yf.Ticker(ticker)
@@ -128,8 +175,21 @@ def ticker_news():
        df_redis = df_new
     print(df_redis)
     import_data_redis("woodez_sentiment",df_redis)
-    import_data_redis("ticker_sentiment",sentiment_df)    
+    # import_data_redis("ticker_sentiment",sentiment_df)    
     return sentiment_df
 
 ticker_news()
+twitter_sentiment("@BTCTN", "btc_sentiment","NA")
+twitter_sentiment("@markets","market_sentiment","NA")
+twitter_sentiment("NA","war_sentiment","crisis")
+# test = twitter_query_crisis("Ukraine")
+# sentiment_total = 0
+# for info in test[:40]:
+#    created = info.created_at
+#    tweet_msg = info.full_text.strip('\n')
+#    analysis = TextBlob(str(tweet_msg))
+#    sentiment = analysis.sentiment.polarity
+#    sentiment_total+=sentiment
+# print(sentiment_total)
+
 # get_sentiment("PLTR")
