@@ -1,6 +1,6 @@
 pipeline {
 
-  agent { label 'azure' }
+  agent { label 'ubuntu' }
 
   parameters{
     string(defaultValue: 'sq,tsla', name: 'Stocks', description: 'Comma spearated list of stocks you want to analyze and watch')
